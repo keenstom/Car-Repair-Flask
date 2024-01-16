@@ -41,8 +41,17 @@ class Contact(db.Model):
         db.session.delete(self)
         db.session.commit()
     
+
+class Subscriber(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(120), nullable=False)
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
+
+
 admin = Admin(app, name='Admin Panel', template_mode='bootstrap3')
-admin.add_view(ModelView(Booking, db.session))
+
 
 @app.route('/book', methods=['POST'])
 def book():
@@ -78,9 +87,20 @@ def add_contact():
 
     return redirect(url_for('index'))
 
+@app.route('/add_Subscriber', methods=['POST'])
+def add_Subscriber():
+    email = request.form['email']
 
+    new_Subscriber = Subscriber(email=email)
+    db.session.add(new_Subscriber)
+    db.session.commit()
 
+    return redirect(url_for('index'))
+
+admin.add_view(ModelView(Subscriber, db.session))
+admin.add_view(ModelView(Booking, db.session))
 admin.add_view(ModelView(Contact, db.session))
+
 
 @app.route("/")
 def index():
